@@ -14,17 +14,23 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Setup JDK 21
+      - name: Setup JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 21
+          java-version: 17
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build with Gradle
-        run: ./gradlew build
+      # Build + disable Sentry tasks (FIX LỖI TOKEN)
+      - name: Build with Gradle (no sentry)
+        run: |
+          ./gradlew build \
+          -x sentryBundleSourcesJava \
+          -x sentryCollectSourcesJava \
+          -x core:sentryBundleSourcesJava \
+          -x core:sentryCollectSourcesJava
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
